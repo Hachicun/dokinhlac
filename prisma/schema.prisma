@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model dokinhlac {
+  dokinhlac_id    Int      @id @default(autoincrement())
+  symptom         String?
+  patient_id      Int?
+  tieutruong_trai Int?
+  tam_trai        Int?
+  tamtieu_trai    Int?
+  tambao_trai     Int?
+  daitruong_trai  Int?
+  phe_trai        Int?
+  tieutruong_phai Int?
+  tam_phai        Int?
+  tamtieu_phai    Int?
+  tambao_phai     Int?
+  daitruong_phai  Int?
+  phe_phai        Int?
+  bangquang_trai  Int?
+  than_trai       Int?
+  dom_trai        Int?
+  vi_trai         Int?
+  can_trai        Int?
+  ty_trai         Int?
+  bangquang_phai  Int?
+  than_phai       Int?
+  dom_phai        Int?
+  vi_phai         Int?
+  can_phai        Int?
+  ty_phai         Int?
+  patient         patient? @relation(fields: [patient_id], references: [patient_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model patient {
+  patient_id      Int         @id @default(autoincrement())
+  patient_name    String?     @db.VarChar(255)
+  patient_phone   String?     @db.VarChar(50)
+  patient_history String?
+  user_email      String?     @db.VarChar(255)
+  dokinhlac       dokinhlac[]
+  user            user?       @relation(fields: [user_email], references: [user_email], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_email")
+}
+
+model user {
+  user_email String    @id @db.VarChar(255)
+  user_name  String?   @db.VarChar(255)
+  user_phone String?   @db.VarChar(50)
+  patient    patient[]
+}
