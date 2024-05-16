@@ -43,7 +43,9 @@ const PatientDetail = () => {
           {dokinhlac.length > 0 ? (
             <ul>
               {dokinhlac.map((item) => (
-                <li key={item.dokinhlac_id}>{item.dokinhlac_id}</li>
+                <li key={item.dokinhlac_id} onClick={() => router.push(`/result?dokinhlac_id=${item.dokinhlac_id}`)}>
+                  {item.dokinhlac_id}
+                </li>
               ))}
             </ul>
           ) : (
