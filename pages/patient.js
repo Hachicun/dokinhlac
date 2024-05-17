@@ -7,7 +7,6 @@ const Patient = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPatient, setSelectedPatient] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,28 +32,6 @@ const Patient = () => {
     router.push('/newpatient');
   };
 
-  const handleSelectPatient = (patientId) => {
-    setSelectedPatient(patientId);
-  };
-
-  const handleDeletePatient = async () => {
-    if (!selectedPatient) {
-      alert('Please select a patient to delete.');
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/deletepatient?patient_id=${encodeURIComponent(selectedPatient)}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Failed to delete patient');
-      setPatients(patients.filter((patient) => patient.patient_id !== selectedPatient));
-      setSelectedPatient(null);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -62,15 +39,11 @@ const Patient = () => {
     <div>
       <h1>Patient List</h1>
       <button onClick={handleAddPatient}>Add Patient</button>
-      <button onClick={handleDeletePatient} disabled={!selectedPatient}>Delete Patient</button>
       {patients.length > 0 ? (
         <ul>
           {patients.map((patient) => (
             <li key={patient.patient_id}>
               <span>{patient.patient_name} - {patient.patient_phone}</span>
-              <button onClick={() => handleSelectPatient(patient.patient_id)}>
-                {selectedPatient === patient.patient_id ? 'Selected' : 'Select Patient'}
-              </button>
               <button onClick={() => router.push(`/patientdetail?patient_id=${patient.patient_id}`)}>
                 View
               </button>

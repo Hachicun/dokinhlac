@@ -40,7 +40,10 @@ const PatientDetail = () => {
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
-
+  const handleEditPatient = () => {
+    router.push(`/editpatient?patient_id=${patient_id}`);
+  };
+  
   const handleDelete = async () => {
     try {
       await Promise.all(
@@ -72,6 +75,24 @@ const PatientDetail = () => {
       console.error('Failed to fetch comparison data:', err);
     }
   };
+  
+  const handleAddCheck = () => {
+    router.push(`/newcheck?patient_id=${patient_id}`);
+  };
+
+  const handleDeletePatient = async () => {
+    try {
+      const res = await fetch(`/api/deletepatient?patient_id=${encodeURIComponent(patient_id)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) throw new Error('Failed to delete patient');
+      router.push('/patient'); // Điều hướng trở lại trang danh sách bệnh nhân sau khi xóa
+    } catch (err) {
+      console.error('Failed to delete patient:', err);
+    }
+  };
+  
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -83,6 +104,12 @@ const PatientDetail = () => {
           <h1>{patient.patient_name}</h1>
           <p>Phone: {patient.patient_phone}</p>
           <p>History: {patient.patient_history}</p>
+          <button onClick={handleAddCheck}>Add Check</button>
+          <button onClick={handleEditPatient}>Edit Patient</button>
+          <button onClick={handleDeletePatient}>Delete Patient</button>
+
+
+
           <h2>Dokinhlac IDs</h2>
           {dokinhlac.length > 0 ? (
             <ul>

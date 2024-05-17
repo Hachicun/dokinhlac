@@ -9,6 +9,12 @@ export default async function handler(req, res) {
     }
 
     try {
+      // Xóa các bản ghi liên quan trong bảng dokinhlac
+      await prisma.dokinhlac.deleteMany({
+        where: { patient_id: parseInt(patient_id, 10) },
+      });
+
+      // Xóa bệnh nhân
       const deletedPatient = await prisma.patient.delete({
         where: { patient_id: parseInt(patient_id, 10) },
       });

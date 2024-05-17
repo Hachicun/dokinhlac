@@ -3,9 +3,12 @@ import { useRouter } from 'next/router';
 
 const NewCheck = () => {
   const [patients, setPatients] = useState([]);
+  const router = useRouter();
+  const { patient_id } = router.query; // Lấy patient_id từ URL
+
   const [formData, setFormData] = useState({
     symptom: '',
-    patient_id: '',
+    patient_id: patient_id || '', // Thiết lập giá trị mặc định cho patient_id
     tieutruong_trai: '',
     tam_trai: '',
     tamtieu_trai: '',
@@ -31,7 +34,6 @@ const NewCheck = () => {
     can_phai: '',
     ty_phai: ''
   });
-  const router = useRouter();
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -102,6 +104,7 @@ const NewCheck = () => {
         value={formData.patient_id}
         onChange={handleChange}
         required
+        disabled={!!patient_id} // Disable the select input if patient_id is provided in the URL
       >
         <option value="">Select a patient</option>
         {patients.length > 0 ? (
