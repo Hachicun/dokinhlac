@@ -4,6 +4,9 @@ import { calculateDataset } from '../utils/calculateDataset';
 import dynamic from 'next/dynamic';
 
 const ChartComponent = dynamic(() => import('../components/ChartComponent'), { ssr: false });
+const BasicAnalytic = dynamic(() => import('../components/BasicAnalytic'), { ssr: false });
+const HandToeAnalytic = dynamic(() => import('../components/HandToeAnalytic'), { ssr: false });
+const ColdHeatAnalytic = dynamic(() => import('../components/ColdHeatAnalytic'), { ssr: false });
 
 const Result = () => {
   const router = useRouter();
@@ -92,6 +95,12 @@ const Result = () => {
                 ))}
               </ul>
               <ChartComponent data={calDataset} />
+
+              <BasicAnalytic calDataset={calDataset} />
+              <HandToeAnalytic calDataset={calDataset} />
+              <ColdHeatAnalytic calDataset={calDataset} />
+
+
             </>
           )}
         </>
