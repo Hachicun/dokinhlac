@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext'; // vẫn như code ban đầu
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
 
 const EditPatient = () => {
   const [formData, setFormData] = useState({
@@ -11,11 +12,16 @@ const EditPatient = () => {
   const { currentUser } = useAuth(); // vẫn như code ban đầu
   const router = useRouter();
   const { patient_id } = router.query; // vẫn như code ban đầu
+  const token = useAuthToken(); // Thêm dòng này để lấy token
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
-        const res = await fetch(`/api/patientdetail?patient_id=${encodeURIComponent(patient_id)}`);
+        const res = await fetch(`/api/patientdetail?patient_id=${encodeURIComponent(patient_id)}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm header Authorization
+          },
+        });
         if (!res.ok) throw new Error('Failed to fetch patient details');
         const data = await res.json();
         setFormData({
@@ -28,10 +34,10 @@ const EditPatient = () => {
       }
     };
 
-    if (patient_id) {
+    if (patient_id && token) { // Thêm điều kiện kiểm tra token
       fetchPatientDetails();
     }
-  }, [patient_id]);
+  }, [patient_id, token]); // Thêm token vào dependency array
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,11 +47,19 @@ const EditPatient = () => {
     e.preventDefault();
     const fullData = { ...formData, user_email: currentUser.email, patient_id: parseInt(patient_id, 10) };
 
+    if (!token) {
+      alert('Failed to authenticate. Please try again.');
+      return;
+    }
+
     try {
       const response = await fetch('/api/updatepatient', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullData)
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Thêm header Authorization
+        },
+        body: JSON.stringify(fullData),
       });
 
       if (!response.ok) {

@@ -1,6 +1,9 @@
+//pages/patient.js
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext'; // Ensure you have this context setup for auth
 import { useRouter } from 'next/router';
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
+
 
 const Patient = () => {
   const { currentUser } = useAuth(); // This assumes you have a hook to access the current user
@@ -8,12 +11,17 @@ const Patient = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const token = useAuthToken(); // Thêm dòng này để lấy token
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (currentUser && currentUser.email) {
+      if (token) { // Thay đổi currentUser && currentUser.email thành token
         try {
-          const res = await fetch(`/api/listpatient?user_email=${encodeURIComponent(currentUser.email)}`);
+          const res = await fetch('/api/listpatient', {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm header Authorization
+            },
+          });
           if (!res.ok) throw new Error('Failed to fetch patients');
           const data = await res.json();
           setPatients(data);
@@ -24,9 +32,9 @@ const Patient = () => {
         }
       }
     };
-
+  
     fetchPatients();
-  }, [currentUser]);
+  }, [token]);
 
   const handleAddPatient = () => {
     router.push('/newpatient');

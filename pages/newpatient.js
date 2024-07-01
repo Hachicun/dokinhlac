@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext'; // Make sure the authentication context is properly set up
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
 
 const NewPatient = () => {
   const [formData, setFormData] = useState({
@@ -16,21 +17,31 @@ const NewPatient = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const token = useAuthToken(); // Thêm dòng này để lấy token
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const fullData = { ...formData, user_email: currentUser.email };
-
+  
+    if (!token) {
+      alert('Failed to authenticate. Please try again.');
+      return;
+    }
+  
     try {
       const response = await fetch('/api/addpatient', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullData)
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Thêm header Authorization với token
+        },
+        body: JSON.stringify(fullData),
       });
-
+  
       if (!response.ok) {
         throw new Error('Something went wrong with adding the patient');
       }
-
+  
       // Redirect to the patient list page after successful creation
       router.push('/patient');
     } catch (error) {
@@ -38,6 +49,7 @@ const NewPatient = () => {
       alert('Failed to add patient: ' + error.message); // Optionally, display the error message to the user
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit}>

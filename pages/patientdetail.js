@@ -1,7 +1,7 @@
-// pages/patientdetail.js
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
 
 const Compare = dynamic(() => import('../components/Compare'), { ssr: false });
 
@@ -14,12 +14,17 @@ const PatientDetail = () => {
   const [error, setError] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [rawData, setRawData] = useState([]);
+  const token = useAuthToken(); // Thêm dòng này để lấy token
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
-      if (patient_id) {
+      if (patient_id && token) { // Thêm điều kiện kiểm tra token
         try {
-          const res = await fetch(`/api/patientdetail?patient_id=${encodeURIComponent(patient_id)}`);
+          const res = await fetch(`/api/patientdetail?patient_id=${encodeURIComponent(patient_id)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm header Authorization
+            },
+          });
           if (!res.ok) throw new Error('Failed to fetch patient details');
           const data = await res.json();
           setPatient(data.patient);
@@ -33,23 +38,27 @@ const PatientDetail = () => {
     };
 
     fetchPatientDetails();
-  }, [patient_id]);
+  }, [patient_id, token]); // Thêm token vào dependency array
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
   const handleEditPatient = () => {
     router.push(`/editpatient?patient_id=${patient_id}`);
   };
-  
+
   const handleDelete = async () => {
     try {
       await Promise.all(
         selectedIds.map((id) =>
           fetch(`/api/deletedokinhlac?id=${encodeURIComponent(id)}`, {
             method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm header Authorization
+            },
           })
         )
       );
@@ -64,7 +73,11 @@ const PatientDetail = () => {
     try {
       const responses = await Promise.all(
         selectedIds.map((id) =>
-          fetch(`/api/result?dokinhlac_id=${encodeURIComponent(id)}`)
+          fetch(`/api/result?dokinhlac_id=${encodeURIComponent(id)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm header Authorization
+            },
+          })
         )
       );
       const data = await Promise.all(responses.map((res) => res.json()));
@@ -75,7 +88,7 @@ const PatientDetail = () => {
       console.error('Failed to fetch comparison data:', err);
     }
   };
-  
+
   const handleAddCheck = () => {
     router.push(`/newcheck?patient_id=${patient_id}`);
   };
@@ -84,6 +97,9 @@ const PatientDetail = () => {
     try {
       const res = await fetch(`/api/deletepatient?patient_id=${encodeURIComponent(patient_id)}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm header Authorization
+        },
       });
       if (!res.ok) throw new Error('Failed to delete patient');
       router.push('/patient'); // Điều hướng trở lại trang danh sách bệnh nhân sau khi xóa
@@ -91,8 +107,6 @@ const PatientDetail = () => {
       console.error('Failed to delete patient:', err);
     }
   };
-  
-  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -107,9 +121,6 @@ const PatientDetail = () => {
           <button onClick={handleAddCheck}>Add Check</button>
           <button onClick={handleEditPatient}>Edit Patient</button>
           <button onClick={handleDeletePatient}>Delete Patient</button>
-
-
-
           <h2>Dokinhlac IDs</h2>
           {dokinhlac.length > 0 ? (
             <ul>

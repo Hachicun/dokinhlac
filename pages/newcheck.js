@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
 
 const NewCheck = () => {
   const [patients, setPatients] = useState([]);
   const router = useRouter();
   const { patient_id } = router.query; // Lấy patient_id từ URL
+  const token = useAuthToken(); // Thêm dòng này để lấy token
 
   const [formData, setFormData] = useState({
     symptom: '',
@@ -38,7 +40,11 @@ const NewCheck = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const res = await fetch('/api/allpatient');
+        const res = await fetch('/api/listpatient', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Thêm header Authorization
+          },
+        });
         const data = await res.json();
         console.log('Fetched patients:', data); // Log the fetched data for debugging
         if (Array.isArray(data)) {
@@ -52,8 +58,10 @@ const NewCheck = () => {
       }
     };
 
-    fetchPatients();
-  }, []);
+    if (token) { // Thêm điều kiện kiểm tra token
+      fetchPatients();
+    }
+  }, [token]); // Thêm token vào dependency array
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -82,7 +90,10 @@ const NewCheck = () => {
     try {
       const res = await fetch('/api/addcheck', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Thêm header Authorization
+        },
         body: JSON.stringify(transformedData)
       });
 

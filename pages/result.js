@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { calculateDataset } from '../utils/calculateDataset';
 import dynamic from 'next/dynamic';
+import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
 
 const ChartComponent = dynamic(() => import('../components/ChartComponent'), { ssr: false });
 const BasicAnalytic = dynamic(() => import('../components/BasicAnalytic'), { ssr: false });
@@ -16,12 +17,17 @@ const Result = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [calDataset, setCalDataset] = useState(null);
+  const token = useAuthToken(); // Thêm dòng này để lấy token
 
   useEffect(() => {
     const fetchResult = async () => {
-      if (dokinhlac_id) {
+      if (dokinhlac_id && token) { // Thêm điều kiện kiểm tra token
         try {
-          const res = await fetch(`/api/result?dokinhlac_id=${encodeURIComponent(dokinhlac_id)}`);
+          const res = await fetch(`/api/result?dokinhlac_id=${encodeURIComponent(dokinhlac_id)}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Thêm header Authorization
+            },
+          });
           if (!res.ok) throw new Error('Failed to fetch result data');
           const data = await res.json();
           setCheckData(data.dokinhlac);
@@ -65,7 +71,7 @@ const Result = () => {
     };
 
     fetchResult();
-  }, [dokinhlac_id]);
+  }, [dokinhlac_id, token]); // Thêm token vào dependency array
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -77,11 +83,11 @@ const Result = () => {
           <h1>{patient.patient_name}</h1>
           <p>Phone: {patient.patient_phone}</p>
           <p>History: {patient.patient_history}</p>
-          <p>Symptom: {checkData.symptom}</p>
+          <p>Symptom: {checkData?.symptom}</p>
           <h2>Check Results</h2>
           <ul>
-            {Object.entries(checkData).filter(([key]) => key !== 'symptom' && key !== 'patient_id' && key !== 'dokinhlac_id').map(([key, value]) => (
-              <li key={key}>{key.replace(/_/g, ' ')}: {value}</li>
+            {checkData && Object.entries(checkData).filter(([key]) => key !== 'symptom' && key !== 'patient_id' && key !== 'dokinhlac_id').map(([key, value]) => (
+              <li key={key}>{key.replace(/_/g, ' ')}: {String(value)}</li>
             ))}
           </ul>
           {calDataset && (
@@ -95,12 +101,9 @@ const Result = () => {
                 ))}
               </ul>
               <ChartComponent data={calDataset} />
-
               <BasicAnalytic calDataset={calDataset} />
               <HandToeAnalytic calDataset={calDataset} />
               <ColdHeatAnalytic calDataset={calDataset} />
-
-
             </>
           )}
         </>
