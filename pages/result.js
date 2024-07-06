@@ -73,39 +73,36 @@ const Result = () => {
     fetchResult();
   }, [dokinhlac_id, token]); // Thêm token vào dependency array
 
+  const handleBack = () => {
+    if (patient) {
+      router.push(`/patientdetail?patient_id=${patient.patient_id}`);
+    } else {
+      router.back();
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
+    <div className="p-6 bg-white rounded-lg shadow-md" style={{ paddingBottom: '60px' }}>
       {patient && (
         <>
-          <h1>{patient.patient_name}</h1>
-          <p>Phone: {patient.patient_phone}</p>
-          <p>History: {patient.patient_history}</p>
-          <p>Symptom: {checkData?.symptom}</p>
-          <h2>Check Results</h2>
-          <ul>
-            {checkData && Object.entries(checkData).filter(([key]) => key !== 'symptom' && key !== 'patient_id' && key !== 'dokinhlac_id').map(([key, value]) => (
-              <li key={key}>{key.replace(/_/g, ' ')}: {String(value)}</li>
-            ))}
-          </ul>
-          {calDataset && (
-            <>
-              <h2>Calculated Dataset</h2>
-              <ul>
-                {Object.entries(calDataset).map(([key, value]) => (
-                  <li key={key}>
-                    {key}: {value.toFixed(2)}
-                  </li>
-                ))}
-              </ul>
-              <ChartComponent data={calDataset} />
-              <BasicAnalytic calDataset={calDataset} />
-              <HandToeAnalytic calDataset={calDataset} />
-              <ColdHeatAnalytic calDataset={calDataset} />
-            </>
-          )}
+          <h1 className="text-2xl font-semibold mb-4">{patient.patient_name}</h1>
+          <div className="mb-4">
+            <p className="text-lg"><strong>Phone:</strong> {patient.patient_phone}</p>
+            <p className="text-lg"><strong>Year of Birth:</strong> {patient.patient_year}</p>
+            <p className="text-lg"><strong>Sex:</strong> {patient.patient_sex}</p>
+            <p className="text-lg"><strong>History:</strong> {patient.patient_history}</p>
+            <p className="text-lg"><strong>Symptom:</strong> {checkData?.symptom}</p>
+          </div>
+          <div className="space-y-6">
+            <ChartComponent data={calDataset} />
+            <BasicAnalytic calDataset={calDataset} />
+            <HandToeAnalytic calDataset={calDataset} />
+            <ColdHeatAnalytic calDataset={calDataset} />
+          </div>
+          <button onClick={handleBack} className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">Back</button>
         </>
       )}
     </div>

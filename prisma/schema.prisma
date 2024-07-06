@@ -36,6 +36,7 @@ model dokinhlac {
   vi_phai         Int?
   can_phai        Int?
   ty_phai         Int?
+  created_at      DateTime @default(now())  // Thêm dòng này
   patient         patient? @relation(fields: [patient_id], references: [patient_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -43,6 +44,8 @@ model patient {
   patient_id      Int         @id @default(autoincrement())
   patient_name    String?     @db.VarChar(255)
   patient_phone   String?     @db.VarChar(50)
+  patient_year    Int?
+  patient_sex     String?
   patient_history String?
   user_email      String?     @db.VarChar(255)
   dokinhlac       dokinhlac[]

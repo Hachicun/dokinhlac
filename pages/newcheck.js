@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
+import { useAuthToken } from '../hooks/useAuthToken';
 
 const NewCheck = () => {
   const [patients, setPatients] = useState([]);
   const router = useRouter();
-  const { patient_id } = router.query; // Lấy patient_id từ URL
-  const token = useAuthToken(); // Thêm dòng này để lấy token
+  const { patient_id } = router.query;
+  const token = useAuthToken();
 
   const [formData, setFormData] = useState({
     symptom: '',
-    patient_id: patient_id || '', // Thiết lập giá trị mặc định cho patient_id
+    patient_id: patient_id || '',
     tieutruong_trai: '',
     tam_trai: '',
     tamtieu_trai: '',
@@ -42,11 +42,10 @@ const NewCheck = () => {
       try {
         const res = await fetch('/api/listpatient', {
           headers: {
-            Authorization: `Bearer ${token}`, // Thêm header Authorization
+            Authorization: `Bearer ${token}`,
           },
         });
         const data = await res.json();
-        console.log('Fetched patients:', data); // Log the fetched data for debugging
         if (Array.isArray(data)) {
           setPatients(data);
         } else {
@@ -58,10 +57,10 @@ const NewCheck = () => {
       }
     };
 
-    if (token) { // Thêm điều kiện kiểm tra token
+    if (token) {
       fetchPatients();
     }
-  }, [token]); // Thêm token vào dependency array
+  }, [token]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,7 +69,6 @@ const NewCheck = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Convert numerical fields from string to number
     const numericFields = [
       'tieutruong_trai', 'tam_trai', 'tamtieu_trai', 'tambao_trai', 'daitruong_trai', 'phe_trai',
       'tieutruong_phai', 'tam_phai', 'tamtieu_phai', 'tambao_phai', 'daitruong_phai', 'phe_phai',
@@ -83,7 +81,7 @@ const NewCheck = () => {
       if (transformedData[field] !== '') {
         transformedData[field] = parseInt(transformedData[field], 10);
       } else {
-        transformedData[field] = null; // Set empty fields to null
+        transformedData[field] = null;
       }
     });
 
@@ -92,7 +90,7 @@ const NewCheck = () => {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Thêm header Authorization
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(transformedData)
       });
@@ -107,52 +105,71 @@ const NewCheck = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="patient_id">Patient:</label>
-      <select
-        id="patient_id"
-        name="patient_id"
-        value={formData.patient_id}
-        onChange={handleChange}
-        required
-        disabled={!!patient_id} // Disable the select input if patient_id is provided in the URL
-      >
-        <option value="">Select a patient</option>
-        {patients.length > 0 ? (
-          patients.map((patient) => (
-            <option key={patient.patient_id} value={patient.patient_id}>
-              {patient.patient_name}
-            </option>
-          ))
-        ) : (
-          <option value="">No patients available</option>
-        )}
-      </select>
-
-      <label htmlFor="symptom">Symptom:</label>
-      <textarea
-        id="symptom"
-        name="symptom"
-        value={formData.symptom}
-        onChange={handleChange}
-      />
-
-      {/* Add other input fields for check data here */}
-      {Object.keys(formData).filter(key => key !== 'symptom' && key !== 'patient_id').map(key => (
-        <div key={key}>
-          <label htmlFor={key}>{key.replace(/_/g, ' ')}:</label>
-          <input
-            type="number"
-            id={key}
-            name={key}
-            value={formData[key]}
-            onChange={handleChange}
-          />
-        </div>
-      ))}
-
-      <button type="submit">Submit</button>
-    </form>
+    <section className="bg-white min-h-screen pt-16 pb-16"> {/* Thêm pt-16 và pb-16 */}
+      <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+        <h2 className="mb-4 text-xl font-bold text-gray-900">Add a new check</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+            <div className="sm:col-span-2">
+              <label htmlFor="patient_id" className="block mb-2 text-sm font-medium text-gray-900">Patient</label>
+              <select
+                id="patient_id"
+                name="patient_id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={formData.patient_id}
+                onChange={handleChange}
+                required
+                disabled={!!patient_id}
+              >
+                <option value="">Select a patient</option>
+                {patients.length > 0 ? (
+                  patients.map((patient) => (
+                    <option key={patient.patient_id} value={patient.patient_id}>
+                      {patient.patient_name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">No patients available</option>
+                )}
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="symptom" className="block mb-2 text-sm font-medium text-gray-900">Symptom</label>
+              <textarea
+                id="symptom"
+                name="symptom"
+                rows="4"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                placeholder="Describe the symptom"
+                value={formData.symptom}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            {Object.keys(formData).filter(key => key !== 'symptom' && key !== 'patient_id').map(key => (
+              <div className="w-full" key={key}>
+                <label htmlFor={key} className="block mb-2 text-sm font-medium text-gray-900">{key.replace(/_/g, ' ')}</label>
+                <input
+                  type="number"
+                  id={key}
+                  name={key}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  value={formData[key]}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            type="submit"
+            className="inline-flex items-center px-5 py-2.5 mt-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-300 hover:bg-blue-800"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </section>
   );
 };
 

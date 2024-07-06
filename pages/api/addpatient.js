@@ -1,19 +1,20 @@
-//pages/api/addpatient.js
 import prisma from '../../lib/prisma';
 import { authMiddleware } from '../../middleware/auth'; // Thêm dòng này để import middleware
-
 
 export default async function handler(req, res) {
   await authMiddleware(req, res, async () => { // Thêm dòng này để sử dụng middleware
     if (req.method === 'POST') {
-      const { patient_name, patient_phone, patient_history } = req.body;
+      const { patient_name, patient_phone, patient_year, patient_sex, patient_history } = req.body;
       const { email } = req.user; // Lấy email từ middleware
 
       console.log('Received data:', req.body);  // Log incoming data for debugging
 
+      // Chuyển patient_year thành số nguyên
+      const patientYearInt = parseInt(patient_year, 10);
+
       // Additional logging before the request
       console.log('Preparing to create a new patient with:', {
-        patient_name, patient_phone, patient_history, user_email: email
+        patient_name, patient_phone, patient_year: patientYearInt, patient_sex, patient_history, user_email: email
       });
 
       try {
@@ -21,6 +22,8 @@ export default async function handler(req, res) {
           data: {
             patient_name,
             patient_phone,
+            patient_year: patientYearInt,
+            patient_sex,
             patient_history,
             user_email: email // Sử dụng email từ middleware
           }

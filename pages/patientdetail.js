@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
-import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
+import { format } from 'date-fns';
+import { useAuthToken } from '../hooks/useAuthToken';
+import { FaUserEdit, FaTrashAlt, FaPlus, FaEye, FaTrash, FaEquals } from 'react-icons/fa';
 
 const Compare = dynamic(() => import('../components/Compare'), { ssr: false });
 
@@ -14,15 +16,15 @@ const PatientDetail = () => {
   const [error, setError] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [rawData, setRawData] = useState([]);
-  const token = useAuthToken(); // Thêm dòng này để lấy token
+  const token = useAuthToken();
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
-      if (patient_id && token) { // Thêm điều kiện kiểm tra token
+      if (patient_id && token) {
         try {
           const res = await fetch(`/api/patientdetail?patient_id=${encodeURIComponent(patient_id)}`, {
             headers: {
-              Authorization: `Bearer ${token}`, // Thêm header Authorization
+              Authorization: `Bearer ${token}`,
             },
           });
           if (!res.ok) throw new Error('Failed to fetch patient details');
@@ -38,7 +40,7 @@ const PatientDetail = () => {
     };
 
     fetchPatientDetails();
-  }, [patient_id, token]); // Thêm token vào dependency array
+  }, [patient_id, token]);
 
   const handleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -57,7 +59,7 @@ const PatientDetail = () => {
           fetch(`/api/deletedokinhlac?id=${encodeURIComponent(id)}`, {
             method: 'DELETE',
             headers: {
-              Authorization: `Bearer ${token}`, // Thêm header Authorization
+              Authorization: `Bearer ${token}`,
             },
           })
         )
@@ -75,14 +77,13 @@ const PatientDetail = () => {
         selectedIds.map((id) =>
           fetch(`/api/result?dokinhlac_id=${encodeURIComponent(id)}`, {
             headers: {
-              Authorization: `Bearer ${token}`, // Thêm header Authorization
+              Authorization: `Bearer ${token}`,
             },
           })
         )
       );
       const data = await Promise.all(responses.map((res) => res.json()));
       const rawData = data.map((item) => item.dokinhlac);
-      console.log('Raw Data:', rawData); // Log rawData
       setRawData(rawData);
     } catch (err) {
       console.error('Failed to fetch comparison data:', err);
@@ -98,11 +99,11 @@ const PatientDetail = () => {
       const res = await fetch(`/api/deletepatient?patient_id=${encodeURIComponent(patient_id)}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`, // Thêm header Authorization
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!res.ok) throw new Error('Failed to delete patient');
-      router.push('/patient'); // Điều hướng trở lại trang danh sách bệnh nhân sau khi xóa
+      router.push('/patient');
     } catch (err) {
       console.error('Failed to delete patient:', err);
     }
@@ -112,47 +113,93 @@ const PatientDetail = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      {patient ? (
-        <>
-          <h1>{patient.patient_name}</h1>
-          <p>Phone: {patient.patient_phone}</p>
-          <p>History: {patient.patient_history}</p>
-          <button onClick={handleAddCheck}>Add Check</button>
-          <button onClick={handleEditPatient}>Edit Patient</button>
-          <button onClick={handleDeletePatient}>Delete Patient</button>
-          <h2>Dokinhlac IDs</h2>
-          {dokinhlac.length > 0 ? (
-            <ul>
-              {dokinhlac.map((item) => (
-                <li key={item.dokinhlac_id}>
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(item.dokinhlac_id)}
-                    onChange={() => handleSelect(item.dokinhlac_id)}
-                  />
-                  {item.dokinhlac_id}
-                  <button onClick={() => router.push(`/result?dokinhlac_id=${item.dokinhlac_id}`)}>
-                    View
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>No dokinhlac found</div>
-          )}
-          <button onClick={handleDelete} disabled={selectedIds.length === 0}>
-            Delete
-          </button>
-          <button onClick={handleCompare} disabled={selectedIds.length < 2}>
-            Compare
-          </button>
-          {rawData.length > 0 && <Compare rawData={rawData} />}
-        </>
-      ) : (
-        <div>Patient not found</div>
-      )}
-    </div>
+    <section className="bg-white min-h-screen pb-8">
+      <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+        <h1 className="mb-6 text-3xl font-bold text-gray-900">Thông tin bệnh nhân</h1>
+        {patient ? (
+          <>
+            <h2 className="mb-4 text-2xl font-bold text-gray-900">{patient.patient_name}</h2>
+            <div className="mb-6">
+              <p className="text-lg text-gray-600">Phone: {patient.patient_phone}</p>
+              <p className="text-lg text-gray-600">Year: {patient.patient_year}</p>
+              <p className="text-lg text-gray-600">Sex: {patient.patient_sex}</p>
+              <p className="text-lg text-gray-600">History: {patient.patient_history}</p>
+            </div>
+            <div className="flex space-x-4 mb-6">
+              <button
+                onClick={handleAddCheck}
+                className="flex flex-col items-center px-4 py-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800"
+              >
+                <FaPlus className="mb-1" />
+                <span className="text-xs">Add Check</span>
+              </button>
+              <button
+                onClick={handleEditPatient}
+                className="flex flex-col items-center px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600"
+              >
+                <FaUserEdit className="mb-1" />
+                <span className="text-xs">Edit Patient</span>
+              </button>
+              <button
+                onClick={handleDeletePatient}
+                className="flex flex-col items-center px-4 py-2 text-white bg-red-700 rounded-lg hover:bg-red-800"
+              >
+                <FaTrashAlt className="mb-1" />
+                <span className="text-xs">Delete Patient</span>
+              </button>
+            </div>
+            <h2 className="mb-4 text-xl font-bold text-gray-900">Dokinhlac Records</h2>
+            {dokinhlac.length > 0 ? (
+              <ul className="mb-6">
+                {dokinhlac.map((item) => (
+                  <li key={item.dokinhlac_id} className="mb-4">
+                    <div className="flex items-center space-x-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(item.dokinhlac_id)}
+                        onChange={() => handleSelect(item.dokinhlac_id)}
+                        className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
+                      />
+                      <span className="text-lg">{format(new Date(item.created_at), 'dd/MM/yyyy HH:mm:ss')}</span>
+                      <button
+                        onClick={() => router.push(`/result?dokinhlac_id=${item.dokinhlac_id}`)}
+                        className="flex items-center px-4 py-2 text-sm text-white bg-green-700 rounded-lg hover:bg-green-800"
+                      >
+                        <FaEye className="mr-2" />
+                        View
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-lg text-gray-600">No dokinhlac records found</div>
+            )}
+            <div className="flex space-x-4">
+              <button
+                onClick={handleDelete}
+                disabled={selectedIds.length === 0}
+                className={`flex items-center px-4 py-2 text-white rounded-lg ${selectedIds.length === 0 ? 'bg-gray-400' : 'bg-red-700 hover:bg-red-800'}`}
+              >
+                <FaTrash className="mr-2" />
+                Delete
+              </button>
+              <button
+                onClick={handleCompare}
+                disabled={selectedIds.length < 2}
+                className={`flex items-center px-4 py-2 text-white rounded-lg ${selectedIds.length < 2 ? 'bg-gray-400' : 'bg-blue-700 hover:bg-blue-800'}`}
+              >
+                <FaEquals className="mr-2" />
+                Compare
+              </button>
+            </div>
+            {rawData.length > 0 && <Compare rawData={rawData} />}
+          </>
+        ) : (
+          <div className="text-lg text-gray-600">Patient not found</div>
+        )}
+      </div>
+    </section>
   );
 };
 

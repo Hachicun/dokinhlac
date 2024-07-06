@@ -1,101 +1,131 @@
-// components/Compare.js
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { calculateDataset } from '../utils/calculateDataset';
+import { parseISO, format } from 'date-fns';
+import 'chart.js/auto';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-const Compare = ({ rawData }) => {
-  const [compareData, setCompareData] = useState([]);
+const Compare = ({ rawData = [] }) => {
+  const [chartData, setChartData] = useState(null);
+  const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
-    const datasets = rawData.map((item) => {
-      const { dokinhlac_id, patient_id, symptom, ...values } = item;
-      const calculatedDataset = calculateDataset(values);
-      console.log('Calculated Dataset:', calculatedDataset); // Log calculated dataset
-      return calculatedDataset;
-    });
-    setCompareData(datasets);
-  }, [rawData]);
+    const customLabels = ["TTr", "Tâm", "3T", "TBL", "Đtr", "Phế", "BQ", "Thận", "Đởm", "Vị", "Can", "Tỳ"];
 
-  // Lấy nhãn từ đối tượng dữ liệu đầu tiên
-  const labels = compareData.length > 0 ? Object.keys(compareData[0]) : [];
-  console.log('Labels:', labels); // Log labels
+    if (rawData.length > 0) {
+      const datasets = rawData.map((item, index) => {
+        const { created_at, ...values } = item;
+        const calculatedDataset = calculateDataset(values);
+        return {
+          label: format(parseISO(created_at), 'dd/MM/yyyy HH:mm:ss'),
+          data: Object.values(calculatedDataset),
+          borderColor: index % 2 === 0 ? '#00E396' : '#0090FF',
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+          borderWidth: 2,
+          pointBackgroundColor: '#FFF',
+          pointBorderColor: index % 2 === 0 ? '#00E396' : '#0090FF',
+          pointHoverRadius: 5,
+          pointRadius: 3,
+        };
+      });
 
-  // Màu sắc khác nhau cho từng dataset
-  const colors = [
-    'rgba(255, 99, 132, 1)',
-    'rgba(54, 162, 235, 1)',
-    'rgba(255, 206, 86, 1)',
-    'rgba(75, 192, 192, 1)',
-    'rgba(153, 102, 255, 1)',
-    'rgba(255, 159, 64, 1)',
-    'rgba(199, 199, 199, 1)',
-    'rgba(83, 102, 255, 1)',
-    'rgba(78, 255, 140, 1)',
-    'rgba(255, 99, 255, 1)'
-  ];
+      setChartData({
+        labels: customLabels,
+        datasets: datasets,
+      });
 
-  // Tạo các bộ dữ liệu để hiển thị trên biểu đồ
-  const datasets = compareData.map((data, index) => {
-    const values = Object.values(data);
-    console.log(`Values for dataset ${index + 1}:`, values); // Log values
-    return {
-      label: `Dataset ${index + 1}`,
-      data: values,
-      borderColor: colors[index % colors.length],
-      backgroundColor: colors[index % colors.length].replace('1)', '0.2)'),
-      fill: false,
-    };
-  });
-
-  const chartData = {
-    labels,
-    datasets,
-  };
-
-  const config = {
-    type: 'line',
-    data: chartData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Comparison of Selected Dokinhlac IDs',
-        },
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: {
-            color: (context) => {
-              if (context.tick.value === 0) {
-                return '#000'; // Màu đậm cho trục y=0
-              }
-              return 'rgba(0, 0, 0, 0.1)';
-            },
-            lineWidth: (context) => {
-              if (context.tick.value === 0) {
-                return 2; // Độ dày đậm cho trục y=0
-              }
-              return 1;
+      setChartOptions({
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            rtl:false,
+            align: 'right',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
             },
           },
+          tooltip: {
+            enabled: false, // Disable tooltip
+          },
         },
-      },
-    },
-  };
-
-  console.log('Chart Config:', config); // Log chart config
+        hover: {
+          mode: 'nearest',
+          intersect: true,
+        },
+        scales: {
+          x: {
+            title: {
+              display: false,
+              text: 'Values',
+            },
+            ticks: {
+              callback: function(value) {
+                return value.toFixed(0);
+              },
+            },
+            grid: {
+              color: function(context) {
+                return context.tick.value === 0 ? '#000' : '#e7e7e7';
+              },
+              lineWidth: function(context) {
+                return context.tick.value === 0 ? 0.5 : 1;
+              },
+            },
+          },
+          y: {
+            title: {
+              display: false,
+              text: 'Parameters',
+            },
+            ticks: {
+              callback: function(value, index) {
+                return customLabels[index]; // Display labels on y-axis
+              },
+            },
+            // grid: {
+            //   color: function(context) {
+            //     return context.tick.value === 0 ? '#000' : '#e7e7e7';
+            //   },
+            //   lineWidth: function(context) {
+            //     return context.tick.value === 0 ? 2 : 1;
+            //   },
+            // },
+          },
+        },
+        elements: {
+          point: {
+            radius: 3,
+            hoverRadius: 5,
+          },
+        },
+      });
+    }
+  }, [rawData]);
 
   return (
-    <div style={{ width: '600px', margin: '0 auto' }}>
-      <Line {...config} />
+    <div className="max-w-full w-full bg-white rounded-lg shadow p-4 md:p-6">
+      <div className="flex justify-between mb-5">
+        <div className="grid gap-4 grid-cols-2">
+          <div>
+            <h5 className="inline-flex items-center text-gray-500 leading-none font-normal mb-2">
+              So sánh
+            </h5>
+            <p className="text-gray-900 text-2xl leading-none font-bold">Biểu đồ</p>
+          </div>
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <div style={{ width: '100%', height: '600px' }}> {/* Adjust the height as needed */}
+          {chartData ? (
+            <Line data={chartData} options={chartOptions} />
+          ) : (
+            <p className="text-center text-gray-500">No data available</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
