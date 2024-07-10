@@ -145,8 +145,9 @@ const NewPatient = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="male">Nam</option>
-                <option value="female">Nữ</option>
+                <option value="Selection">Chọn giới tính</option>               
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
               </select>
               {errors.patient_sex && <p className="text-red-500 text-sm mt-1">{errors.patient_sex}</p>}
             </div>

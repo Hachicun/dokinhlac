@@ -48,7 +48,7 @@ const Patient = () => {
 
   return (
     <section className="flex flex-col min-h-screen bg-gray-50 p-3 sm:p-5">
-      <div className="flex-grow mx-auto max-w-screen-xl px-4 lg:px-12">
+      <div className="flex-grow mx-auto w-full max-w-screen-xl px-4 lg:px-12">
         <div className="bg-white shadow-md sm:rounded-lg overflow-hidden flex flex-col h-full min-h-[calc(100vh-10rem)]">
           <div className="p-4 flex-grow flex flex-col">
             <h1 className="text-2xl font-bold mb-4">Danh sách bệnh nhân</h1>
@@ -78,8 +78,8 @@ const Patient = () => {
               </div>
             </form>
             <div className="overflow-x-auto flex-grow">
-              <table className="w-full text-left text-gray-500">
-                <thead className="text-gray-700  bg-gray-50">
+              <table className="min-w-full text-left text-gray-500">
+                <thead className="text-gray-700 bg-gray-50">
                   <tr>
                     <th scope="col" className="px-4 py-3">Tên bệnh nhân</th>
                     <th scope="col" className="px-4 py-3">SĐT</th>
@@ -90,7 +90,7 @@ const Patient = () => {
                     filteredPatients.map((patient) => (
                       <tr
                         key={patient.patient_id}
-                        className="border-b cursor-pointer"
+                        className="border-b cursor-pointer hover:bg-gray-100"
                         onClick={() => router.push(`/patientdetail?patient_id=${patient.patient_id}`)}
                       >
                         <th scope="row" className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{patient.patient_name}</th>

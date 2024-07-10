@@ -1,11 +1,18 @@
 import { FaBell, FaSearch, FaCog } from 'react-icons/fa';
+import { useRouter } from 'next/router';
 
 const AppBar = () => {
+  const router = useRouter();
+
+  const handleTitleClick = () => {
+    router.push('/');
+  };
+
   return (
     <div className="bg-white shadow-md fixed w-full top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={handleTitleClick}>
             <h1 className="text-2xl font-bold text-gray-800">Đo Kinh Lạc</h1>
             <span className="ml-3 text-sm text-gray-500">@Lục Khí</span>
           </div>

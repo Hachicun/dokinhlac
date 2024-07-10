@@ -24,8 +24,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">Login</h2>
-          <p className="mt-2 text-sm text-gray-600">Please enter your email and password to login.</p>
+          <h2 className="text-2xl font-bold text-gray-900">Đăng nhập</h2>
+          <p className="mt-2 text-sm text-gray-600">Đăng nhập bằng tài khoản và mật khẩu đã được cung cấp.</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-6">
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -42,7 +42,7 @@ const Login = () => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mật khẩu</label>
             <input
               id="password"
               name="password"

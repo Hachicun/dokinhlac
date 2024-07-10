@@ -28,7 +28,7 @@ const ColdHeatAnalytic = ({ calDataset }) => {
     labels,
     datasets: [
       {
-        label: 'Values',
+        label: 'Giá trị',
         data: values,
         backgroundColor: function (context) {
           const chart = context.chart;
@@ -60,7 +60,7 @@ const ColdHeatAnalytic = ({ calDataset }) => {
         },
       },
       title: {
-        display: true,
+        display: false,
         text: 'Cold Heat Analytic',
         font: {
           family: 'Inter, sans-serif',

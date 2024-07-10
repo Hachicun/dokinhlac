@@ -132,10 +132,10 @@ const ChartComponent = ({ data }) => {
       legend: {
         position: 'top',
       },
-      title: {
-        text: 'Calculated Dataset',
-        align: 'center',
-      },
+      // title: {
+      //   text: 'Calculated Dataset',
+      //   align: 'center',
+      // },
     },
   };
 
