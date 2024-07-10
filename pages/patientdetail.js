@@ -128,7 +128,7 @@ const PatientDetail = () => {
               <p className="text-lg text-gray-600">Số điện thoại: {patient.patient_phone}</p>
               <p className="text-lg text-gray-600">Năm sinh: {patient.patient_year}</p>
               <p className="text-lg text-gray-600">Giới tính: {patient.patient_sex}</p>
-              <p className="text-lg text-gray-600">Bệnh sử: {patient.patient_history}</p>
+              <p className="text-lg text-gray-600">Tiền sử: {patient.patient_history}</p>
             </div>
             <div className="flex space-x-4 mb-6">
               <button

@@ -13,6 +13,7 @@ const NewPatient = () => {
     patient_history: ''
   });
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { currentUser } = useAuth();
   const router = useRouter();
   const token = useAuthToken();
@@ -47,11 +48,14 @@ const NewPatient = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Disable button
+
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       const firstErrorField = Object.keys(newErrors)[0];
       refs[firstErrorField].current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setIsSubmitting(false); // Enable button if validation fails
       return;
     }
 
@@ -59,6 +63,7 @@ const NewPatient = () => {
 
     if (!token) {
       alert('Failed to authenticate. Please try again.');
+      setIsSubmitting(false); // Enable button if authentication fails
       return;
     }
 
@@ -80,6 +85,7 @@ const NewPatient = () => {
     } catch (error) {
       console.error('Failed to add patient:', error);
       alert('Failed to add patient: ' + error.message);
+      setIsSubmitting(false); // Enable button if request fails
     }
   };
 
@@ -145,7 +151,7 @@ const NewPatient = () => {
                 onChange={handleChange}
                 required
               >
-                <option value="Selection">Chọn giới tính</option>               
+                <option value="">Chọn giới tính</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
               </select>
@@ -160,8 +166,9 @@ const NewPatient = () => {
           <button
             type="submit"
             className="inline-flex items-center px-5 py-2.5 mt-4 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-300 hover:bg-blue-800"
+            disabled={isSubmitting}
           >
-            Thêm bệnh nhân
+            {isSubmitting ? 'Vui lòng đợi...' : 'Thêm bệnh nhân'}
           </button>
         </form>
       </div>
