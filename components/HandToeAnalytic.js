@@ -42,8 +42,15 @@ const HandToeAnalytic = ({ calDataset }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Hand Toe Analytic</h2>
+    <div className="p-4 bg-white rounded-lg shadow-md mb-4px">
+          <div>
+            <h5 className="inline-flex items-center text-gray-500 leading-none font-normal mb-2">
+              Phân tích
+            </h5>
+            <p className="text-gray-900 text-2xl leading-none font-bold">Thủ Túc</p>
+            <p className="text-gray-900 text-2xl leading-none font-bold">...</p>
+
+          </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 border-2 border-gray-300">
           <thead className="bg-gray-50">

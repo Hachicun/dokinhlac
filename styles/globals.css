@@ -6,4 +6,5 @@
     width: 24px; /* Kích thước chiều rộng của icon */
     height: 24px; /* Kích thước chiều cao của icon */
   }
-  
+/* Đảm bảo ô tìm kiếm luôn hiển thị trên cùng khi bàn phím xuất hiện */
+/* Đảm bảo ô tìm kiếm luôn hiển thị trên cùng nhưng cách trên 20px khi bàn phím xuất hiện */

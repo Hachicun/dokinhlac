@@ -110,9 +110,9 @@ const ColdHeatAnalytic = ({ calDataset }) => {
         <div className="grid gap-4 grid-cols-2">
           <div>
             <h5 className="inline-flex items-center text-gray-500 leading-none font-normal mb-2">
-              Analytics
+              Phân tích
             </h5>
-            <p className="text-gray-900 text-2xl leading-none font-bold">Cold Heat Analytic</p>
+            <p className="text-gray-900 text-2xl leading-none font-bold">Hàn Nhiệt</p>
           </div>
         </div>
       </div>

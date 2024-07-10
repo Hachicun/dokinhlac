@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { calculateDataset } from '../utils/calculateDataset';
 import dynamic from 'next/dynamic';
 import { useAuthToken } from '../hooks/useAuthToken'; // Thêm dòng này để import custom hook
+import PDFButtons from '../components/PDFButtons'; // Thêm dòng này để import PDFButtons
 
 const ChartComponent = dynamic(() => import('../components/ChartComponent'), { ssr: false });
 const BasicAnalytic = dynamic(() => import('../components/BasicAnalytic'), { ssr: false });
@@ -61,6 +62,8 @@ const Result = () => {
           };
 
           const calDataset = calculateDataset(originDataset);
+          console.log(originDataset);
+          console.log(calDataset);
           setCalDataset(calDataset);
         } catch (err) {
           setError(err.message);
@@ -85,24 +88,26 @@ const Result = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md" style={{ paddingBottom: '60px' }}>
+    <div id="result-content" className="p-6 bg-white rounded-lg shadow-md" style={{ paddingBottom: '60px' }}>
       {patient && (
         <>
           <h1 className="text-2xl font-semibold mb-4">{patient.patient_name}</h1>
           <div className="mb-4">
-            <p className="text-lg"><strong>Phone:</strong> {patient.patient_phone}</p>
-            <p className="text-lg"><strong>Year of Birth:</strong> {patient.patient_year}</p>
-            <p className="text-lg"><strong>Sex:</strong> {patient.patient_sex}</p>
-            <p className="text-lg"><strong>History:</strong> {patient.patient_history}</p>
-            <p className="text-lg"><strong>Symptom:</strong> {checkData?.symptom}</p>
+            <p className="text-lg"><strong>Số điện thoại:</strong> {patient.patient_phone}</p>
+            <p className="text-lg"><strong>Năm sinh:</strong> {patient.patient_year}</p>
+            <p className="text-lg"><strong>Giới tính:</strong> {patient.patient_sex}</p>
+            <p className="text-lg"><strong>Tiền sử:</strong> {patient.patient_history}</p>
+            <p className="text-lg"><strong>Triệu chứng:</strong> {checkData?.symptom}</p>
           </div>
           <div className="space-y-6">
             <ChartComponent data={calDataset} />
+            <ColdHeatAnalytic calDataset={calDataset} />
             <BasicAnalytic calDataset={calDataset} />
             <HandToeAnalytic calDataset={calDataset} />
-            <ColdHeatAnalytic calDataset={calDataset} />
           </div>
+          <PDFButtons elementId="result-content" />
           <button onClick={handleBack} className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">Back</button>
+
         </>
       )}
     </div>

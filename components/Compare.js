@@ -10,21 +10,30 @@ const Compare = ({ rawData = [] }) => {
 
   useEffect(() => {
     const customLabels = ["TTr", "Tâm", "3T", "TBL", "Đtr", "Phế", "BQ", "Thận", "Đởm", "Vị", "Can", "Tỳ"];
+    
+    // Danh sách các màu khác nhau
+    const colors = [
+      '#00E396', '#0090FF', '#FF4560', '#775DD0', '#FEB019', '#FF66C3', '#33B2DF', '#546E7A',
+      '#D4526E', '#13D8AA', '#A5978B', '#2B908F', '#F9A3A4', '#90EE7E', '#FA4443', '#69D2E7'
+    ];
 
     if (rawData.length > 0) {
       const datasets = rawData.map((item, index) => {
         const { created_at, ...values } = item;
         const calculatedDataset = calculateDataset(values);
+        const color = colors[index % colors.length]; // Lấy màu từ danh sách
+
         return {
-          label: format(parseISO(created_at), 'dd/MM/yyyy HH:mm:ss'),
+          label: format(parseISO(created_at), 'HH:mm dd/MM/yyyy'), // Đổi định dạng thành 'HH:mm dd/MM/yyyy'
           data: Object.values(calculatedDataset),
-          borderColor: index % 2 === 0 ? '#00E396' : '#0090FF',
-          backgroundColor: 'rgba(0, 0, 0, 0)',
+          borderColor: color,
+          backgroundColor: color,
           borderWidth: 2,
           pointBackgroundColor: '#FFF',
-          pointBorderColor: index % 2 === 0 ? '#00E396' : '#0090FF',
+          pointBorderColor: color,
           pointHoverRadius: 5,
           pointRadius: 3,
+          tension: 0.4, // Thêm thuộc tính tension để tạo đường cong mềm mại
         };
       });
 
@@ -40,11 +49,12 @@ const Compare = ({ rawData = [] }) => {
         plugins: {
           legend: {
             position: 'top',
-            rtl:false,
+            rtl: false,
             align: 'right',
             labels: {
-              usePointStyle: true,
-              pointStyle: 'circle',
+              usePointStyle: false, // Đặt thành false để tô màu toàn bộ hình tròn
+              boxWidth: 12,
+              boxHeight: 12,
             },
           },
           tooltip: {
@@ -62,15 +72,15 @@ const Compare = ({ rawData = [] }) => {
               text: 'Values',
             },
             ticks: {
-              callback: function(value) {
+              callback: function (value) {
                 return value.toFixed(0);
               },
             },
             grid: {
-              color: function(context) {
+              color: function (context) {
                 return context.tick.value === 0 ? '#000' : '#e7e7e7';
               },
-              lineWidth: function(context) {
+              lineWidth: function (context) {
                 return context.tick.value === 0 ? 0.5 : 1;
               },
             },
@@ -81,7 +91,7 @@ const Compare = ({ rawData = [] }) => {
               text: 'Parameters',
             },
             ticks: {
-              callback: function(value, index) {
+              callback: function (value, index) {
                 return customLabels[index]; // Display labels on y-axis
               },
             },

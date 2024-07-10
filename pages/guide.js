@@ -1,8 +1,8 @@
 const Guide = () => {
     return (
       <div>
-        <h1>Guide</h1>
-        <p>This is the guide page.</p>
+        <h1>Hướng dẫn</h1>
+        <p>Hướng dẫn sẽ được cập nhật sau</p>
         {/* Thêm nội dung hướng dẫn của bạn ở đây */}
       </div>
     );

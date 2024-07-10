@@ -11,12 +11,12 @@ const ChartComponent = ({ data }) => {
 
   // Determine the background color for each bar based on the value
   const colors = values.map(value => {
-    if (Math.abs(value) > 200) {
-      return '#FF6384'; // Red for severe condition
-    } else if (Math.abs(value) > 100) {
-      return '#FFCE56'; // Yellow for mild condition
+    if (value > 200 || value < -200) {
+      return 'red'; // Red for severe condition
+    } else if ((value > 100 && value <= 200) || (value < -100 && value >= -200)) {
+      return 'orange'; // Orange for mild condition
     } else {
-      return '#36A2EB'; // Blue for normal condition
+      return 'blue'; // Blue for normal condition
     }
   });
 
@@ -52,8 +52,18 @@ const ChartComponent = ({ data }) => {
               },
               {
                 from: -100,
-                to: Infinity,
+                to: 100,
                 color: '#36A2EB',
+              },
+              {
+                from: 100,
+                to: 200,
+                color: '#FFCE56',
+              },
+              {
+                from: 200,
+                to: Infinity,
+                color: '#FF6384',
               },
             ],
           },
@@ -103,6 +113,22 @@ const ChartComponent = ({ data }) => {
       tooltip: {
         enabled: true,
       },
+      annotations: {
+        xaxis: [
+          {
+            x: 0,
+            borderColor: '#000',
+            borderWidth: 0.5,
+            strokeDashArray: 0,
+            label: {
+              style: {
+                color: '#fff',
+                background: '#000',
+              },
+            },
+          },
+        ],
+      },
       legend: {
         position: 'top',
       },
@@ -119,9 +145,9 @@ const ChartComponent = ({ data }) => {
         <div className="grid gap-4 grid-cols-2">
           <div>
             <h5 className="inline-flex items-center text-gray-500 leading-none font-normal mb-2">
-              Analytics
+              Phân tích
             </h5>
-            <p className="text-gray-900 text-2xl leading-none font-bold">Chart</p>
+            <p className="text-gray-900 text-2xl leading-none font-bold">Cơ Bản</p>
           </div>
         </div>
       </div>

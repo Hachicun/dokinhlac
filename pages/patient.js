@@ -43,8 +43,8 @@ const Patient = () => {
     patient.patient_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Vui lòng đợi...</div>;
+  if (error) return <div>Xảy ra lỗi: {error}</div>;
 
   return (
     <section className="flex flex-col min-h-screen bg-gray-50 p-3 sm:p-5">
@@ -57,10 +57,10 @@ const Patient = () => {
               className="mb-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none"
               onClick={handleAddPatient}
             >
-              Add Patient
+              Thêm bệnh nhân
             </button>
             <form className="flex items-center mb-4">
-              <label htmlFor="search" className="sr-only">Search</label>
+              <label htmlFor="search" className="sr-only">Tìm kiếm</label>
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <svg aria-hidden="true" className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -78,11 +78,11 @@ const Patient = () => {
               </div>
             </form>
             <div className="overflow-x-auto flex-grow">
-              <table className="w-full text-sm text-left text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <table className="w-full text-left text-gray-500">
+                <thead className="text-gray-700  bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-4 py-3">Patient Name</th>
-                    <th scope="col" className="px-4 py-3">Patient Phone</th>
+                    <th scope="col" className="px-4 py-3">Tên bệnh nhân</th>
+                    <th scope="col" className="px-4 py-3">SĐT</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,7 +99,7 @@ const Patient = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="2" className="px-4 py-3 text-center">No patients found</td>
+                      <td colSpan="2" className="px-4 py-3 text-center">Chưa có bệnh nhân nào!</td>
                     </tr>
                   )}
                 </tbody>

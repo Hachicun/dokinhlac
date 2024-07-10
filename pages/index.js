@@ -1,6 +1,6 @@
-// pages/index.js
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Spinner from '../components/Spinner';
 
 const Home = () => {
   const router = useRouter();
@@ -9,7 +9,7 @@ const Home = () => {
     router.push('/patient');
   }, [router]);
 
-  return null; // Có thể hiển thị một loader hoặc thông báo chờ
+  return <Spinner />; // Hiển thị Spinner trong khi chờ chuyển hướng
 };
 
 export default Home;

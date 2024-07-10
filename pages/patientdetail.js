@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { format } from 'date-fns';
 import { useAuthToken } from '../hooks/useAuthToken';
 import { FaUserEdit, FaTrashAlt, FaPlus, FaEye, FaTrash, FaEquals } from 'react-icons/fa';
+import Spinner from '../components/Spinner'; // Import Spinner
 
 const Compare = dynamic(() => import('../components/Compare'), { ssr: false });
 
@@ -16,6 +17,7 @@ const PatientDetail = () => {
   const [error, setError] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [rawData, setRawData] = useState([]);
+  const [comparing, setComparing] = useState(false); // Thêm trạng thái so sánh
   const token = useAuthToken();
 
   useEffect(() => {
@@ -72,6 +74,7 @@ const PatientDetail = () => {
   };
 
   const handleCompare = async () => {
+    setComparing(true); // Bắt đầu trạng thái so sánh
     try {
       const responses = await Promise.all(
         selectedIds.map((id) =>
@@ -87,6 +90,8 @@ const PatientDetail = () => {
       setRawData(rawData);
     } catch (err) {
       console.error('Failed to fetch comparison data:', err);
+    } finally {
+      setComparing(false); // Kết thúc trạng thái so sánh
     }
   };
 
@@ -120,10 +125,10 @@ const PatientDetail = () => {
           <>
             <h2 className="mb-4 text-2xl font-bold text-gray-900">{patient.patient_name}</h2>
             <div className="mb-6">
-              <p className="text-lg text-gray-600">Phone: {patient.patient_phone}</p>
-              <p className="text-lg text-gray-600">Year: {patient.patient_year}</p>
-              <p className="text-lg text-gray-600">Sex: {patient.patient_sex}</p>
-              <p className="text-lg text-gray-600">History: {patient.patient_history}</p>
+              <p className="text-lg text-gray-600">Số điện thoại: {patient.patient_phone}</p>
+              <p className="text-lg text-gray-600">Năm sinh: {patient.patient_year}</p>
+              <p className="text-lg text-gray-600">Giới tính: {patient.patient_sex}</p>
+              <p className="text-lg text-gray-600">Bệnh sử: {patient.patient_history}</p>
             </div>
             <div className="flex space-x-4 mb-6">
               <button
@@ -131,24 +136,24 @@ const PatientDetail = () => {
                 className="flex flex-col items-center px-4 py-2 text-white bg-blue-700 rounded-lg hover:bg-blue-800"
               >
                 <FaPlus className="mb-1" />
-                <span className="text-xs">Add Check</span>
+                <span className="text-xs">Đo mới</span>
               </button>
               <button
                 onClick={handleEditPatient}
-                className="flex flex-col items-center px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600"
+                className="flex flex-col items-center px-4 py-2 text-black bg-yellow-500 rounded-lg hover:bg-yellow-600"
               >
                 <FaUserEdit className="mb-1" />
-                <span className="text-xs">Edit Patient</span>
+                <span className="text-xs">Chỉnh sửa</span>
               </button>
               <button
                 onClick={handleDeletePatient}
                 className="flex flex-col items-center px-4 py-2 text-white bg-red-700 rounded-lg hover:bg-red-800"
               >
                 <FaTrashAlt className="mb-1" />
-                <span className="text-xs">Delete Patient</span>
+                <span className="text-xs">Xóa</span>
               </button>
             </div>
-            <h2 className="mb-4 text-xl font-bold text-gray-900">Dokinhlac Records</h2>
+            <h2 className="mb-4 text-xl font-bold text-gray-900">Bản ghi đo kinh lạc</h2>
             {dokinhlac.length > 0 ? (
               <ul className="mb-6">
                 {dokinhlac.map((item) => (
@@ -160,20 +165,20 @@ const PatientDetail = () => {
                         onChange={() => handleSelect(item.dokinhlac_id)}
                         className="form-checkbox h-4 w-4 text-blue-600 transition duration-150 ease-in-out"
                       />
-                      <span className="text-lg">{format(new Date(item.created_at), 'dd/MM/yyyy HH:mm:ss')}</span>
+                      <span className="text-lg">{format(new Date(item.created_at), 'HH:mm dd/MM/yyyy')}</span>
                       <button
                         onClick={() => router.push(`/result?dokinhlac_id=${item.dokinhlac_id}`)}
                         className="flex items-center px-4 py-2 text-sm text-white bg-green-700 rounded-lg hover:bg-green-800"
                       >
                         <FaEye className="mr-2" />
-                        View
+                        Chi tiết
                       </button>
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="text-lg text-gray-600">No dokinhlac records found</div>
+              <div className="text-lg text-gray-600">Chưa có lần đo nào</div>
             )}
             <div className="flex space-x-4">
               <button
@@ -182,21 +187,22 @@ const PatientDetail = () => {
                 className={`flex items-center px-4 py-2 text-white rounded-lg ${selectedIds.length === 0 ? 'bg-gray-400' : 'bg-red-700 hover:bg-red-800'}`}
               >
                 <FaTrash className="mr-2" />
-                Delete
+                Xóa
               </button>
               <button
                 onClick={handleCompare}
-                disabled={selectedIds.length < 2}
-                className={`flex items-center px-4 py-2 text-white rounded-lg ${selectedIds.length < 2 ? 'bg-gray-400' : 'bg-blue-700 hover:bg-blue-800'}`}
+                disabled={selectedIds.length < 2 || comparing}
+                className={`flex items-center px-4 py-2 text-white rounded-lg ${selectedIds.length < 2 || comparing ? 'bg-gray-400' : 'bg-blue-700 hover:bg-blue-800'}`}
               >
                 <FaEquals className="mr-2" />
-                Compare
+                {comparing ? 'Đang so sánh...' : 'So sánh'}
               </button>
             </div>
+            {comparing && <Spinner />} {/* Hiển thị spinner khi so sánh */}
             {rawData.length > 0 && <Compare rawData={rawData} />}
           </>
         ) : (
-          <div className="text-lg text-gray-600">Patient not found</div>
+          <div className="text-lg text-gray-600">Không tìm thấy bệnh nhân</div>
         )}
       </div>
     </section>

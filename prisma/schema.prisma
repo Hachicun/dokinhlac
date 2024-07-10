@@ -12,31 +12,31 @@ model dokinhlac {
   dokinhlac_id    Int      @id @default(autoincrement())
   symptom         String?
   patient_id      Int?
-  tieutruong_trai Int?
-  tam_trai        Int?
-  tamtieu_trai    Int?
-  tambao_trai     Int?
-  daitruong_trai  Int?
-  phe_trai        Int?
-  tieutruong_phai Int?
-  tam_phai        Int?
-  tamtieu_phai    Int?
-  tambao_phai     Int?
-  daitruong_phai  Int?
-  phe_phai        Int?
-  bangquang_trai  Int?
-  than_trai       Int?
-  dom_trai        Int?
-  vi_trai         Int?
-  can_trai        Int?
-  ty_trai         Int?
-  bangquang_phai  Int?
-  than_phai       Int?
-  dom_phai        Int?
-  vi_phai         Int?
-  can_phai        Int?
-  ty_phai         Int?
-  created_at      DateTime @default(now())  // Thêm dòng này
+  tieutruong_trai Float?
+  tam_trai        Float?
+  tamtieu_trai    Float?
+  tambao_trai     Float?
+  daitruong_trai  Float?
+  phe_trai        Float?
+  tieutruong_phai Float?
+  tam_phai        Float?
+  tamtieu_phai    Float?
+  tambao_phai     Float?
+  daitruong_phai  Float?
+  phe_phai        Float?
+  bangquang_trai  Float?
+  than_trai       Float?
+  dom_trai        Float?
+  vi_trai         Float?
+  can_trai        Float?
+  ty_trai         Float?
+  bangquang_phai  Float?
+  than_phai       Float?
+  dom_phai        Float?
+  vi_phai         Float?
+  can_phai        Float?
+  ty_phai         Float?
+  created_at      DateTime @default(now())
   patient         patient? @relation(fields: [patient_id], references: [patient_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
