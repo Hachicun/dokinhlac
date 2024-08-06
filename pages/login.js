@@ -65,8 +65,8 @@ const Login = () => {
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Chưa có tài khoản? <br />
-            <a href="/register" className="text-blue-600 hover:underline">Đăng kí khóa học Lục Khí Trung Cấp bậc 1</a> để nhận tài khoản. <br />
-            Hoặc liên hệ <a href="/contact" className="text-blue-600 hover:underline">bác sĩ Vũ Đức Đại</a> để được cấp tài khoản.
+            <a href="https://www.ydichluckhi.com/lktcb1" className="text-blue-600 hover:underline">Đăng kí khóa học Lục Khí Trung Cấp bậc 1</a> để nhận tài khoản. <br />
+            Hoặc liên hệ <a href="https://zalo.me/0397609660" className="text-blue-600 hover:underline">bác sĩ Vũ Đức Đại</a> để được cấp tài khoản.
           </p>
         </div>
       </div>
